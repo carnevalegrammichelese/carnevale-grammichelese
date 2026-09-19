@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Iscrizione — {{ categoria.nome }}{% endblock %}
+{% block content %}
+
+<section class="pagina-titolo">
+  <div class="wrap">
+    <h1>Iscrizione: {{ categoria.nome }}</h1>
+    <p>{{ categoria.descrizione }}</p>
+  </div>
+</section>
+
+<div class="wrap">
+  {% if categoria.regolamento %}
+  <div class="regolamento-box">
+    <h3>Regolamento</h3>
+    <p>{{ categoria.regolamento }}</p>
+  </div>
+  {% endif %}
+
+  <form class="form-card" method="post">
+    <span class="prezzo-badge">Quota: {{ "%.2f"|format(categoria.prezzo_quota) }} € a partecipante</span>
+    <h3>Modulo di iscrizione</h3>
+    <p style="color:#7a6f58; font-size:0.88rem; margin-bottom:20px;">I campi con * sono obbligatori.</p>
+
+    <div class="form-row">
+      <label>Nome del gruppo / referente <span class="req">*</span></label>
+      <input type="text" name="nome_gruppo" value="{{ form.get('nome_gruppo','') }}" required>
+    </div>
+    <div class="form-row">
+      <label>Nome e cognome del referente <span class="req">*</span></label>
+      <input type="text" name="referente" value="{{ form.get('referente','') }}" required>
+    </div>
+    <div class="form-row">
+      <label>Email <span class="req">*</span></label>
+      <input type="email" name="email" value="{{ form.get('email','') }}" required>
+    </div>
+    <div class="form-row">
+      <label>Telefono</label>
+      <input type="tel" name="telefono" value="{{ form.get('telefono','') }}">
+    </div>
+    <div class="form-row">
+      <label>Numero di partecipanti <span class="req">*</span></label>
+      <input type="number" name="num_partecipanti" min="1" value="{{ form.get('num_partecipanti','1') }}" required>
+      <div class="form-hint">Determina l'importo totale della quota (moltiplicato per {{ "%.2f"|format(categoria.prezzo_quota) }} €).</div>
+    </div>
+    <div class="form-row">
+      <label>{{ categoria.dettagli_label }}</label>
+      <textarea name="dettagli">{{ form.get('dettagli','') }}</textarea>
+    </div>
+    <div class="form-row">
+      <label>Elenco nomi dei partecipanti</label>
+      <textarea name="elenco_nomi" placeholder="Un nome per riga">{{ form.get('elenco_nomi','') }}</textarea>
+      <div class="form-hint">Se comprate quote aggiuntive più avanti, potete scrivere qui solo i nuovi nomi.</div>
+    </div>
+
+    <button type="submit" class="btn-primary" style="width:100%;">Invia iscrizione</button>
+  </form>
+</div>
+
+{% endblock %}

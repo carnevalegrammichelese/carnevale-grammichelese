@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Iscrivi il gruppo — {{ categoria.nome }}{% endblock %}
+{% block content %}
+
+<section class="pagina-titolo">
+  <div class="wrap">
+    <h1>Iscrivi il tuo gruppo: {{ categoria.nome }}</h1>
+    <p>{{ categoria.descrizione }}</p>
+  </div>
+</section>
+
+<div class="wrap">
+  {% if categoria.regolamento %}
+  <div class="regolamento-box">
+    <h3>Regolamento</h3>
+    <p>{{ categoria.regolamento }}</p>
+  </div>
+  {% endif %}
+
+  <form class="form-card" method="post">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <span class="prezzo-badge">Quota: {{ "%.2f"|format(categoria.prezzo_quota) }} € a partecipante</span>
+    <h3>Dati del gruppo</h3>
+    <p style="color:#7a6f58; font-size:0.88rem; margin-bottom:20px;">
+      Potrai aggiungere altri partecipanti in qualsiasi momento dal tuo account.
+    </p>
+
+    <div class="form-row">
+      <label>Nome del gruppo <span class="req">*</span></label>
+      <input type="text" name="nome_gruppo" value="{{ form.get('nome_gruppo','') }}" required>
+    </div>
+    <div class="form-row">
+      <label>{{ categoria.dettagli_label }}</label>
+      <textarea name="dettagli">{{ form.get('dettagli','') }}</textarea>
+    </div>
+    <div class="form-row">
+      <label>Nomi dei partecipanti (uno per riga) <span class="req">*</span></label>
+      <textarea name="elenco_nomi" placeholder="Mario Rossi&#10;Luigi Verdi&#10;..." required>{{ form.get('elenco_nomi','') }}</textarea>
+      <div class="form-hint">Inserisci qui tutti i partecipanti che si iscrivono insieme ora: riceverete un unico codice da usare nella causale del bonifico per pagarli tutti insieme.</div>
+    </div>
+
+    <button type="submit" class="btn-primary" style="width:100%;">Crea l'iscrizione</button>
+  </form>
+</div>
+
+{% endblock %}

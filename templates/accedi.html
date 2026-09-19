@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Accedi{% endblock %}
+{% block content %}
+<div class="wrap" style="max-width:460px; padding-top:60px; padding-bottom:80px;">
+  <div class="form-card">
+    <h3>Accedi al tuo account</h3>
+    <form method="post">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="next" value="{{ next }}">
+      <div class="form-row">
+        <label>Email <span class="req">*</span></label>
+        <input type="email" name="email" required autofocus>
+      </div>
+      <div class="form-row">
+        <label>Password <span class="req">*</span></label>
+        <input type="password" name="password" required>
+      </div>
+      <button type="submit" class="btn-primary" style="width:100%;">Accedi</button>
+    </form>
+    <p style="text-align:center; margin-top:18px; font-size:0.9rem;">
+      Non hai ancora un account? <a href="{{ url_for('registrati', next=next) }}" style="color:var(--rosso); font-weight:600;">Creane uno</a>
+    </p>
+    <p style="text-align:center; margin-top:8px; font-size:0.85rem;">
+      <a href="{{ url_for('password_dimenticata') }}" style="color:#7a6f58;">Password dimenticata?</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

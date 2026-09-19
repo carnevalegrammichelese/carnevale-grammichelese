@@ -1,0 +1,61 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Programma{% endblock %}
+{% block content %}
+<h1>Programma della festa</h1>
+<p class="admin-sub">Aggiungi gli appuntamenti di ogni giornata.</p>
+
+<div class="admin-form-card">
+  <h3>Aggiungi un evento</h3>
+  <form method="post">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <div style="display:flex; gap:12px;">
+      <div class="admin-form-row" style="flex:2;">
+        <label>Etichetta giornata (es. "Giorno 1 · Sabato")</label>
+        <input type="text" name="giorno_label" required>
+      </div>
+      <div class="admin-form-row" style="flex:1;">
+        <label>Ordine giornata (1, 2, 3…)</label>
+        <input type="number" name="giorno_ordine" value="1" required>
+      </div>
+      <div class="admin-form-row" style="flex:1;">
+        <label>Orario</label>
+        <input type="text" name="orario" placeholder="18:00">
+      </div>
+    </div>
+    <div class="admin-form-row">
+      <label>Titolo evento</label>
+      <input type="text" name="titolo" required>
+    </div>
+    <div class="admin-form-row">
+      <label>Descrizione</label>
+      <textarea name="descrizione"></textarea>
+    </div>
+    <div class="admin-form-row" style="max-width:160px;">
+      <label>Ordine nel giorno</label>
+      <input type="number" name="ordine" value="1">
+    </div>
+    <button type="submit" class="btn-admin">Aggiungi evento</button>
+  </form>
+</div>
+
+<table class="admin-table">
+  <tr><th>Giorno</th><th>Orario</th><th>Titolo</th><th>Descrizione</th><th></th></tr>
+  {% for ev in eventi %}
+  <tr>
+    <td>{{ ev.giorno_label }}</td>
+    <td>{{ ev.orario }}</td>
+    <td>{{ ev.titolo }}</td>
+    <td>{{ ev.descrizione }}</td>
+    <td>
+      <form method="post" action="{{ url_for('admin_elimina_evento', evento_id=ev.id) }}"
+            onsubmit="return confirm('Eliminare questo evento?');">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn-admin danger" style="padding:4px 10px; font-size:0.78rem;">Elimina</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="5" style="color:#7a6f58;">Nessun evento inserito.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Iscrizioni{% endblock %}
+{% block content %}
+<h1>Iscrizioni</h1>
+<p class="admin-sub">Un versamento per riga: ogni versamento è un versamento, con il suo elenco di partecipanti e il suo codice.</p>
+
+<form method="get" style="display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap; align-items:end;">
+  <div>
+    <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">Categoria</label>
+    <select name="categoria" style="padding:8px 10px; border-radius:3px; border:1px solid #dcd3ba;">
+      <option value="">Tutte</option>
+      {% for cat in categorie %}
+      <option value="{{ cat.slug }}" {{ 'selected' if filtro_categoria==cat.slug }}>{{ cat.nome }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">Stato</label>
+    <select name="stato" style="padding:8px 10px; border-radius:3px; border:1px solid #dcd3ba;">
+      <option value="">Tutti</option>
+      <option value="in_attesa" {{ 'selected' if filtro_stato=='in_attesa' }}>In attesa</option>
+      <option value="pagato" {{ 'selected' if filtro_stato=='pagato' }}>Pagato</option>
+    </select>
+  </div>
+  <div>
+    <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px;">Gruppo</label>
+    <select name="gruppo" style="padding:8px 10px; border-radius:3px; border:1px solid #dcd3ba; max-width:280px;">
+      <option value="">Tutti i gruppi</option>
+      {% for g in gruppi_disponibili %}
+      <option value="{{ g.id }}" {{ 'selected' if filtro_gruppo==g.id|string }}>
+        {{ g.categoria_nome }} — {{ g.nome_gruppo or g.utente_nome }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn-admin secondary">Filtra</button>
+  <a href="{{ url_for('admin_export_pdf') }}" class="btn-admin" style="text-decoration:none;">Esporta PDF</a>
+</form>
+
+<div class="admin-table-wrap">
+<table class="admin-table">
+  <tr>
+    <th style="width:110px;">Data</th><th style="width:120px;">Categoria</th><th style="width:130px;">Gruppo</th><th style="width:170px;">Referente (account)</th>
+    <th style="width:260px;">Partecipanti nel versamento</th><th style="width:100px;">Importo</th><th style="width:150px;">Stato</th><th style="width:110px;">Codice</th><th style="width:80px;"></th>
+  </tr>
+  {% for l in versamenti %}
+  <tr>
+    <td>{{ l.data_creazione[:16] }}</td>
+    <td>{{ l.categoria_nome }}</td>
+    <td>{{ l.nome_gruppo or '—' }}</td>
+    <td>{{ l.utente_nome }}<br><span style="color:#7a6f58;">{{ l.utente_email }}</span></td>
+    <td>{{ l.nomi_partecipanti }} <span style="color:#7a6f58;">({{ l.num_partecipanti }})</span></td>
+    <td>{{ "%.2f"|format(l.prezzo_quota * l.num_partecipanti) }} €</td>
+    <td>
+      <span class="badge {{ l.stato_pagamento }}">{{ 'Pagato' if l.stato_pagamento=='pagato' else 'In attesa' }}</span>
+      <form method="post" action="{{ url_for('admin_cambia_stato', versamento_id=l.versamento_id) }}" style="margin-top:6px;">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="stato" value="{{ 'in_attesa' if l.stato_pagamento=='pagato' else 'pagato' }}">
+        <button type="submit" class="btn-admin secondary" style="padding:4px 10px; font-size:0.78rem;">
+          Segna come {{ 'in attesa' if l.stato_pagamento=='pagato' else 'pagato' }}
+        </button>
+      </form>
+    </td>
+    <td style="font-size:0.85rem; font-weight:600;">{{ l.codice_riferimento }}</td>
+    <td>
+      <form method="post" action="{{ url_for('admin_elimina_versamento', versamento_id=l.versamento_id) }}"
+            onsubmit="return confirm('Eliminare questo versamento e i suoi partecipanti?');">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn-admin danger" style="padding:4px 10px; font-size:0.78rem;">Elimina</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="9" style="color:#7a6f58;">Nessuna iscrizione trovata.</td></tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}

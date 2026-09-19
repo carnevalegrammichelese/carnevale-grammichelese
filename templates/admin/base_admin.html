@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Dashboard{% endblock %} — Carnevale Grammichelese</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script src="{{ url_for('static', filename='js/admin-table-resize.js') }}" defer></script>
+</head>
+<body class="admin-body">
+<div class="admin-wrap">
+  <aside class="admin-sidebar">
+    <div class="brand">Carnevale · Admin</div>
+    <a href="{{ url_for('admin_dashboard') }}" class="{{ 'active' if request.endpoint=='admin_dashboard' }}">Panoramica</a>
+    <a href="{{ url_for('admin_iscrizioni') }}" class="{{ 'active' if request.endpoint=='admin_iscrizioni' }}">Iscrizioni</a>
+    <a href="{{ url_for('admin_utenti') }}" class="{{ 'active' if request.endpoint=='admin_utenti' }}">Utenti</a>
+    <a href="{{ url_for('admin_contenuti') }}" class="{{ 'active' if request.endpoint in ['admin_contenuti'] }}">Contenuti sito</a>
+    <a href="{{ url_for('admin_programma') }}" class="{{ 'active' if request.endpoint=='admin_programma' }}">Programma</a>
+    <a href="{{ url_for('admin_galleria') }}" class="{{ 'active' if request.endpoint=='admin_galleria' }}">Galleria</a>
+    <a href="{{ url_for('admin_password') }}" class="{{ 'active' if request.endpoint=='admin_password' }}">Cambia password</a>
+    <div class="logout">
+      <a href="{{ url_for('home') }}" target="_blank">Vedi il sito ↗</a>
+      <a href="{{ url_for('admin_logout') }}">Esci</a>
+    </div>
+  </aside>
+  <main class="admin-main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for categoria, msg in messages %}
+          <div class="flash {{ 'errore' if categoria=='errore' else 'successo' }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Panoramica{% endblock %}
+{% block content %}
+<h1>Panoramica</h1>
+<p class="admin-sub">Riepilogo generale delle iscrizioni al Carnevale.</p>
+
+<div class="stat-cards">
+  <div class="stat-card"><div class="val">{{ totale_iscrizioni }}</div><div class="lbl">Partecipanti totali</div></div>
+  <div class="stat-card"><div class="val">{{ totale_pagati }}</div><div class="lbl">Quote pagate</div></div>
+  <div class="stat-card"><div class="val">{{ totale_utenti }}</div><div class="lbl">Account creati</div></div>
+  <div class="stat-card"><div class="val">{{ "%.2f"|format(incasso_incassato) }} € / {{ "%.2f"|format(incasso_atteso) }} €</div><div class="lbl">Incassato / atteso</div></div>
+</div>
+
+<div class="admin-form-card">
+  <h3>Iscrizioni per categoria</h3>
+  <table class="admin-table">
+    <tr><th>Categoria</th><th>Gruppi</th><th>Partecipanti</th></tr>
+    {% for cat in per_categoria %}
+    <tr><td>{{ cat.nome }}</td><td>{{ cat.gruppi }}</td><td>{{ cat.partecipanti }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

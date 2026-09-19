@@ -1,0 +1,31 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Utenti{% endblock %}
+{% block content %}
+<h1>Utenti registrati</h1>
+<p class="admin-sub">Account creati per iscrivere i propri gruppi. Se qualcuno dimentica la password, puoi generargliene una nuova qui — comunicagliela tu stesso via telefono o email, il sistema non la invia automaticamente.</p>
+
+<div class="admin-table-wrap">
+<table class="admin-table">
+  <tr><th style="width:150px;">Nome</th><th style="width:200px;">Email</th><th style="width:130px;">Telefono</th><th style="width:80px;">Gruppi</th><th style="width:100px;">Partecipanti</th><th style="width:140px;">Registrato il</th><th style="width:160px;"></th></tr>
+  {% for u in utenti %}
+  <tr>
+    <td>{{ u.nome }}</td>
+    <td>{{ u.email }}</td>
+    <td>{{ u.telefono or '—' }}</td>
+    <td>{{ u.n_gruppi }}</td>
+    <td>{{ u.n_partecipanti }}</td>
+    <td>{{ u.data_creazione[:16] }}</td>
+    <td>
+      <form method="post" action="{{ url_for('admin_reset_password_utente', utente_id=u.id) }}"
+            onsubmit="return confirm('Generare una nuova password temporanea per {{ u.nome }}? Quella attuale smetterà di funzionare.');">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn-admin secondary" style="padding:5px 10px; font-size:0.78rem;">Reimposta password</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="7" style="color:#7a6f58;">Nessun utente registrato ancora.</td></tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}

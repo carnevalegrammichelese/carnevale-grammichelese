@@ -1,0 +1,38 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Galleria{% endblock %}
+{% block content %}
+<h1>Galleria fotografica</h1>
+<p class="admin-sub">Carica le foto delle edizioni passate, mostrate nella Home.</p>
+
+<div class="admin-form-card">
+  <h3>Carica una nuova foto</h3>
+  <form method="post" enctype="multipart/form-data">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <div class="admin-form-row">
+      <label>File immagine (PNG, JPG, WEBP — max 8MB)</label>
+      <input type="file" name="immagine" accept="image/*" required>
+    </div>
+    <div class="admin-form-row">
+      <label>Didascalia (es. "Carnevale 2026")</label>
+      <input type="text" name="didascalia">
+    </div>
+    <button type="submit" class="btn-admin">Carica</button>
+  </form>
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:16px;">
+  {% for img in immagini %}
+  <div class="admin-form-card" style="padding:12px;">
+    <img src="{{ url_for('static', filename='img/galleria/' ~ img.immagine_filename) }}" style="border-radius:4px; margin-bottom:10px; aspect-ratio:1/1; object-fit:cover;">
+    <p style="font-size:0.85rem; margin-bottom:8px;">{{ img.didascalia or '—' }}</p>
+    <form method="post" action="{{ url_for('admin_elimina_immagine', img_id=img.id) }}"
+          onsubmit="return confirm('Eliminare questa immagine?');">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="btn-admin danger" style="width:100%; padding:6px; font-size:0.8rem;">Elimina</button>
+    </form>
+  </div>
+  {% else %}
+  <p style="color:#7a6f58;">Nessuna foto caricata ancora.</p>
+  {% endfor %}
+</div>
+{% endblock %}

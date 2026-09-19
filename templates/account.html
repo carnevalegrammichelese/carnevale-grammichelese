@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Il mio account{% endblock %}
+{% block content %}
+
+<section class="pagina-titolo">
+  <div class="wrap" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px;">
+    <div>
+      <h1>Il mio account</h1>
+      <p>Gestisci le tue iscrizioni al Carnevale.</p>
+    </div>
+    <a href="{{ url_for('esci') }}" class="btn-ghost">Esci</a>
+  </div>
+</section>
+
+<div class="wrap" style="padding-bottom:80px;">
+
+  {% if not gruppi %}
+  <p style="color:#8a7f65;">Non hai ancora nessuna iscrizione. Scegline una qui sotto per iniziare.</p>
+  {% endif %}
+
+  {% for item in gruppi %}
+  {% set gr = item.gruppo %}
+  <div class="regolamento-box" style="margin-bottom:28px;">
+    <div style="display:flex; justify-content:space-between; align-items:start; flex-wrap:wrap; gap:10px;">
+      <div>
+        <h3 style="color:#fbf3e2; font-family:'Fraunces',serif; font-size:1.2rem;">{{ gr.categoria_nome }}</h3>
+        {% if gr.nome_gruppo %}<p style="color:#c8bb9b;">{{ gr.nome_gruppo }}</p>{% endif %}
+        {% if gr.dettagli %}<p style="color:#8a7f65; font-size:0.88rem;">{{ gr.dettagli }}</p>{% endif %}
+      </div>
+      <span class="prezzo-badge" style="margin:0;">{{ "%.2f"|format(gr.prezzo_quota) }} € a partecipante</span>
+    </div>
+
+    {% for lp in item.versamenti %}
+    {% set versamento = lp.versamento %}
+    <div style="background:rgba(0,0,0,0.15); border-radius:5px; padding:18px 20px; margin-top:18px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+        <span class="badge {{ versamento.stato_pagamento }}">{{ 'Pagato' if versamento.stato_pagamento=='pagato' else 'In attesa di pagamento' }}</span>
+        {% if versamento.stato_pagamento != 'pagato' %}
+        <form method="post" action="{{ url_for('account_elimina_versamento', versamento_id=versamento.id) }}"
+              onsubmit="return confirm('Rimuovere questo versamento e i suoi partecipanti?');">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-admin danger" style="padding:4px 10px; font-size:0.78rem;">Rimuovi versamento</button>
+        </form>
+        {% endif %}
+      </div>
+      <p style="color:#c8bb9b; font-size:0.9rem; margin-bottom:6px;"><strong>Partecipanti in questo versamento:</strong></p>
+      <ul style="margin:0 0 12px 20px; padding:0; color:#efe6d2; font-size:0.92rem;">
+        {% for p in lp.partecipanti %}
+        <li>{{ p.nome }}</li>
+        {% endfor %}
+      </ul>
+      {% if versamento.stato_pagamento != 'pagato' %}
+      <div class="iban-box" style="margin-top:10px;">
+        <p><strong>Totale da versare per questo versamento ({{ lp.partecipanti|length }} partecipant{{ 'e' if lp.partecipanti|length==1 else 'i' }}):</strong>
+           {{ "%.2f"|format(gr.prezzo_quota * lp.partecipanti|length) }} €</p>
+        <p>IBAN: <strong>{{ c.iban }}</strong> — Intestatario: <strong>{{ c.intestatario_conto }}</strong></p>
+        <p style="background:rgba(231,169,60,0.15); padding:8px 10px; border-radius:3px; margin-top:8px;">
+          Scrivi <strong>esattamente</strong> questo testo nella causale del bonifico:
+        </p>
+        <p style="background:rgba(231,169,60,0.15); padding:8px 10px; border-radius:3px; margin-top:6px; font-size:1.05rem;">
+          Carnevale Grammichelese - <strong>{{ versamento.codice_riferimento }}</strong>
+        </p>
+      </div>
+      {% else %}
+      <p style="color:#8a7f65; font-size:0.82rem;">Carnevale Grammichelese - {{ versamento.codice_riferimento }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    <form method="post" action="{{ url_for('account_aggiungi_partecipante', iscrizione_id=gr.id) }}" style="margin-top:20px;">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+      <label style="display:block; font-size:0.86rem; font-weight:600; margin-bottom:6px;">Aggiungi altri partecipanti a questo gruppo</label>
+      <textarea name="nomi" placeholder="Un nome per riga" required
+                style="width:100%; min-height:70px; padding:10px 12px; border:1px solid rgba(239,230,210,0.2); border-radius:3px; background:#fff; color:#1a1410; font-family:'Archivo',sans-serif; margin-bottom:10px;"></textarea>
+      <div class="form-hint" style="margin-bottom:10px;">Chi aggiungi ora riceverà un codice diverso da quello di chi hai già iscritto — così potrai pagare separatamente, quando arriveranno nuovi partecipanti in momenti diversi.</div>
+      <button type="submit" class="btn-primary">Aggiungi e genera nuovo codice</button>
+    </form>
+  </div>
+  {% endfor %}
+
+  {% if categorie_disponibili %}
+  <div class="section-head" style="margin-top:40px;">
+    <h2>Iscrivi un altro gruppo</h2>
+    <p>Puoi partecipare anche con altre categorie.</p>
+  </div>
+  <div class="hex-grid">
+    {% for cat in categorie_disponibili %}
+    <a class="hex-card" href="{{ url_for('account_nuovo_gruppo', slug=cat.slug) }}">
+      <h3>{{ cat.nome }}</h3>
+      <p>{{ cat.descrizione }}</p>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

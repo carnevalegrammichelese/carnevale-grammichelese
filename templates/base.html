@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Carnevale Grammichelese{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+{% if request.endpoint == 'home' %}
+<div id="cg-splash" class="cg-splash" aria-hidden="true">
+  <div class="cg-splash-hexcluster">
+    <svg class="cg-splash-hex cg-splash-hex-blue" viewBox="0 0 100 100"><polygon points="50,4 93,27 93,73 50,96 7,73 7,27"/></svg>
+    <svg class="cg-splash-hex cg-splash-hex-gold" viewBox="0 0 100 100"><polygon points="50,4 93,27 93,73 50,96 7,73 7,27"/></svg>
+    <svg class="cg-splash-hex cg-splash-hex-red" viewBox="0 0 100 100"><polygon points="50,4 93,27 93,73 50,96 7,73 7,27"/></svg>
+  </div>
+  <div class="cg-splash-text">
+    <div class="cg-splash-eyebrow">Grammichele, la città esagonale</div>
+    <h1 class="cg-splash-title">Carnevale Grammichelese</h1>
+    <div class="cg-splash-edizione">Edizione <em>2027</em></div>
+  </div>
+  <div class="cg-splash-loader"><span></span></div>
+</div>
+<script>
+  (function(){
+    document.documentElement.classList.add('cg-splash-active');
+    var already = sessionStorage.getItem('cg_splash_shown');
+    var splash = document.getElementById('cg-splash');
+    if (already) {
+      splash.style.display = 'none';
+      document.documentElement.classList.remove('cg-splash-active');
+      return;
+    }
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var hold = reduced ? 300 : 2200;
+    setTimeout(function(){
+      splash.classList.add('cg-splash-hide');
+      document.documentElement.classList.remove('cg-splash-active');
+      sessionStorage.setItem('cg_splash_shown', '1');
+      setTimeout(function(){ splash.style.display = 'none'; }, reduced ? 50 : 700);
+    }, hold);
+  })();
+</script>
+{% endif %}
+
+<header class="site">
+  <div class="nav-row">
+    <a class="brand" href="{{ url_for('home') }}">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo Carnevale Grammichelese" onerror="this.style.display='none'">
+      <span class="brand-name">Carnevale Grammichelese</span>
+    </a>
+    <nav class="main"><ul>
+      <li><a href="{{ url_for('home') }}#categorie">Iscrizioni</a></li>
+      <li><a href="{{ url_for('home') }}#sfilata">Galleria</a></li>
+      <li><a href="{{ url_for('home') }}#programma">Programma</a></li>
+      <li><a href="{{ url_for('home') }}#contatti">Comitato</a></li>
+      {% if utente_corrente %}
+      <li><a href="{{ url_for('account') }}">Il mio account</a></li>
+      {% else %}
+      <li><a href="{{ url_for('accedi') }}">Accedi</a></li>
+      {% endif %}
+    </ul></nav>
+    {% if utente_corrente %}
+    <a class="btn-nav" href="{{ url_for('account') }}">Ciao, {{ utente_corrente.nome }}</a>
+    {% else %}
+    <a class="btn-nav" href="{{ url_for('registrati') }}">Iscrivi il tuo gruppo</a>
+    {% endif %}
+  </div>
+</header>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="wrap" style="padding-top:20px;">
+      {% for categoria, msg in messages %}
+        <div class="flash {{ categoria }}">{{ msg }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+{% block content %}{% endblock %}
+
+<footer class="site" id="contatti">
+  <div class="wrap">
+    <div class="foot-row">
+      <div class="foot-col">
+        <h4>Comitato Carnevale Grammichelese</h4>
+        <p>{{ c.footer_indirizzo }}</p>
+        <a href="mailto:{{ c.footer_email }}">{{ c.footer_email }}</a>
+      </div>
+      <div class="foot-col">
+        <h4>Iscrizioni</h4>
+        {% for cat in categorie %}
+          <a href="{{ url_for('account_nuovo_gruppo', slug=cat.slug) }}">{{ cat.nome }}</a>
+        {% endfor %}
+      </div>
+      <div class="foot-col">
+        <h4>Seguici</h4>
+        <a href="{{ c.footer_facebook }}">Facebook</a>
+        <a href="{{ c.footer_instagram }}">Instagram</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© Comitato Carnevale Grammichelese</span>
+      <span><a href="{{ url_for('admin_login') }}" style="color:#6f6650;">Area riservata</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Iscrizione ricevuta{% endblock %}
+{% block content %}
+
+<div class="grazie-box">
+  <svg class="check" viewBox="0 0 60 60">
+    <circle cx="30" cy="30" r="28" fill="none" stroke="#1f6e68" stroke-width="3"/>
+    <path d="M18 31 L26 39 L42 21" fill="none" stroke="#1f6e68" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <h1>Iscrizione ricevuta!</h1>
+  <p style="color:#c8bb9b; margin-top:12px;">
+    Grazie, {{ iscrizione.referente }}. L'iscrizione per <strong>{{ iscrizione.categoria_nome }}</strong> è stata registrata.
+  </p>
+
+  <div class="iban-box">
+    <p><strong>Codice di riferimento:</strong> {{ iscrizione.codice_riferimento }}</p>
+    <p><strong>Partecipanti:</strong> {{ iscrizione.num_partecipanti }}</p>
+    <p><strong>Totale da versare:</strong> {{ "%.2f"|format(totale) }} €</p>
+    <hr style="border-color:rgba(239,230,210,0.1); margin:14px 0;">
+    <p>Effettua il bonifico a:</p>
+    <p><strong>{{ c.intestatario_conto }}</strong></p>
+    <p>IBAN: <strong>{{ c.iban }}</strong></p>
+    <p>Causale: <strong>Iscrizione Carnevale {{ iscrizione.codice_riferimento }}</strong></p>
+  </div>
+
+  <p style="color:#8a7f65; font-size:0.86rem;">
+    L'iscrizione sarà confermata dal comitato non appena il pagamento risulterà ricevuto.
+    Conserva il codice di riferimento per eventuali comunicazioni.
+  </p>
+
+  <a href="{{ url_for('home') }}" class="btn-ghost" style="margin-top:20px; display:inline-block;">Torna alla home</a>
+</div>
+
+{% endblock %}
