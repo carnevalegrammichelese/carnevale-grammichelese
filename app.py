@@ -99,7 +99,7 @@ def registra_tentativo_fallito(chiave):
 
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(32)  # cambia in produzione con una chiave fissa
+app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024  # 8MB max upload
 
@@ -1091,8 +1091,9 @@ def admin_password():
     return render_template("admin/password.html")
 
 
+init_db()  # va eseguito sempre: sia con "python app.py" sia con gunicorn
+
 if __name__ == "__main__":
-    init_db()
     # In locale, mentre sviluppiamo, il debug resta attivo di default (comodo: si
     # riavvia da solo a ogni modifica). Se un giorno questo sito girerà raggiungibile
     # da internet, avvia con la variabile d'ambiente FLASK_DEBUG=0 per disattivarlo.
