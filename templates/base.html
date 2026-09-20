@@ -66,8 +66,45 @@
     {% else %}
     <a class="btn-nav" href="{{ url_for('registrati') }}">Iscrivi il tuo gruppo</a>
     {% endif %}
+    <button class="menu-toggle" id="cgMenuToggle" aria-label="Apri il menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="cgMobileMenu">
+    <ul>
+      <li><a href="{{ url_for('home') }}#categorie">Iscrizioni</a></li>
+      <li><a href="{{ url_for('home') }}#sfilata">Galleria</a></li>
+      <li><a href="{{ url_for('home') }}#programma">Programma</a></li>
+      <li><a href="{{ url_for('home') }}#contatti">Comitato</a></li>
+      {% if utente_corrente %}
+      <li><a href="{{ url_for('account') }}">Il mio account</a></li>
+      <li><a href="{{ url_for('esci') }}">Esci</a></li>
+      {% else %}
+      <li><a href="{{ url_for('accedi') }}">Accedi</a></li>
+      <li><a href="{{ url_for('registrati') }}">Iscrivi il tuo gruppo</a></li>
+      {% endif %}
+    </ul>
   </div>
 </header>
+<script>
+  (function(){
+    var toggle = document.getElementById('cgMenuToggle');
+    var menu = document.getElementById('cgMobileMenu');
+    if (!toggle || !menu) return;
+    toggle.addEventListener('click', function(){
+      var aperto = menu.classList.toggle('open');
+      toggle.classList.toggle('open', aperto);
+      toggle.setAttribute('aria-expanded', aperto ? 'true' : 'false');
+    });
+    menu.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){
+        menu.classList.remove('open');
+        toggle.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+</script>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}

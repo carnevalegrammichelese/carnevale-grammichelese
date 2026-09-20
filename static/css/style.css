@@ -42,6 +42,28 @@ nav.main a:hover{color:var(--oro);}
 .btn-nav{background:var(--rosso); color:#fff8ec !important; padding:9px 18px; border-radius:3px; font-size:0.88rem; font-weight:600;}
 @media (max-width:860px){ nav.main, .btn-nav{display:none;} }
 
+/* ---------- Menu mobile (hamburger) ---------- */
+.menu-toggle{
+  display:none; flex-direction:column; justify-content:center; gap:4px;
+  width:34px; height:34px; background:none; border:none; cursor:pointer; padding:0;
+}
+.menu-toggle span{display:block; width:100%; height:2px; background:var(--crema-testo); transition:transform .25s, opacity .25s;}
+.menu-toggle.open span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+.menu-toggle.open span:nth-child(2){opacity:0;}
+.menu-toggle.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+@media (max-width:860px){ .menu-toggle{display:flex;} }
+
+.mobile-menu{
+  max-height:0; overflow:hidden; background:var(--notte-2);
+  border-bottom:1px solid rgba(239,230,210,0.08);
+  transition:max-height .3s ease;
+}
+.mobile-menu.open{max-height:400px;}
+.mobile-menu ul{list-style:none; margin:0; padding:8px 28px 16px;}
+.mobile-menu li{border-bottom:1px solid rgba(239,230,210,0.06);}
+.mobile-menu a{display:block; padding:13px 4px; font-size:0.98rem; color:var(--crema-testo);}
+.mobile-menu a:hover{color:var(--oro);}
+
 /* ---------- Bottoni generici ---------- */
 .btn-primary{background:var(--rosso); color:#fff8ec !important; padding:14px 24px; border-radius:3px; font-weight:600; display:inline-block; border:none; cursor:pointer; font-family:'Archivo',sans-serif; font-size:1rem;}
 .btn-primary:hover{background:#a52f22;}
