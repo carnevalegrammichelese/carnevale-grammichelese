@@ -49,7 +49,10 @@
     <td>{{ l.categoria_nome }}</td>
     <td>{{ l.nome_gruppo or '—' }}</td>
     <td>{{ l.utente_nome }}<br><span style="color:#7a6f58;">{{ l.utente_email }}</span></td>
-    <td>{{ l.nomi_partecipanti }} <span style="color:#7a6f58;">({{ l.num_partecipanti }})</span></td>
+    <td>
+      <div style="font-size:0.72rem; color:#7a6f58; margin-bottom:4px;">{{ l.num_partecipanti }} partecipant{{ 'e' if l.num_partecipanti==1 else 'i' }}</div>
+      <div style="white-space:pre-line;">{{ l.nomi_partecipanti }}</div>
+    </td>
     <td>{{ "%.2f"|format(l.prezzo_quota * l.num_partecipanti) }} €</td>
     <td>
       <span class="badge {{ l.stato_pagamento }}">{{ 'Pagato' if l.stato_pagamento=='pagato' else 'In attesa' }}</span>

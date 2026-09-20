@@ -742,7 +742,7 @@ def admin_iscrizioni():
         "i.id as iscrizione_id, i.nome_gruppo, i.dettagli, "
         "u.nome as utente_nome, u.email as utente_email, u.telefono as utente_telefono, "
         "c.nome as categoria_nome, c.slug as categoria_slug, c.prezzo_quota, "
-        "(SELECT GROUP_CONCAT(p2.nome, ', ') FROM partecipanti p2 "
+        "(SELECT GROUP_CONCAT(p2.nome, char(10)) FROM partecipanti p2 "
         " WHERE p2.versamento_id = l.id ORDER BY p2.data_creazione, p2.id) as nomi_partecipanti, "
         "(SELECT COUNT(*) FROM partecipanti p2 WHERE p2.versamento_id = l.id) as num_partecipanti "
         "FROM versamenti l "
