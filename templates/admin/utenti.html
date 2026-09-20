@@ -6,7 +6,7 @@
 
 <div class="admin-table-wrap">
 <table class="admin-table">
-  <tr><th style="width:150px;">Nome</th><th style="width:200px;">Email</th><th style="width:130px;">Telefono</th><th style="width:80px;">Gruppi</th><th style="width:100px;">Partecipanti</th><th style="width:140px;">Registrato il</th><th style="width:160px;"></th></tr>
+  <tr><th style="width:150px;">Nome</th><th style="width:200px;">Email</th><th style="width:130px;">Telefono</th><th style="width:80px;">Gruppi</th><th style="width:100px;">Partecipanti</th><th style="width:140px;">Registrato il</th><th style="width:280px;"></th></tr>
   {% for u in utenti %}
   <tr>
     <td>{{ u.nome }}</td>
@@ -15,11 +15,18 @@
     <td>{{ u.n_gruppi }}</td>
     <td>{{ u.n_partecipanti }}</td>
     <td>{{ u.data_creazione[:16] }}</td>
-    <td>
+    <td style="white-space:normal;">
       <form method="post" action="{{ url_for('admin_reset_password_utente', utente_id=u.id) }}"
-            onsubmit="return confirm('Generare una nuova password temporanea per {{ u.nome }}? Quella attuale smetterà di funzionare.');">
+            onsubmit="return confirm('Generare una nuova password temporanea per {{ u.nome }}? Quella attuale smetterà di funzionare.');"
+            style="display:inline-block; margin-bottom:4px;">
         <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="btn-admin secondary" style="padding:5px 10px; font-size:0.78rem;">Reimposta password</button>
+      </form>
+      <form method="post" action="{{ url_for('admin_elimina_utente', utente_id=u.id) }}"
+            onsubmit="return confirm('Eliminare DEFINITIVAMENTE l\'account di {{ u.nome }}? Verranno cancellati anche i suoi {{ u.n_gruppi }} gruppi e {{ u.n_partecipanti }} partecipanti, comprese le iscrizioni già pagate. Non si può annullare.');"
+            style="display:inline-block;">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn-admin danger" style="padding:5px 10px; font-size:0.78rem;">Elimina account</button>
       </form>
     </td>
   </tr>

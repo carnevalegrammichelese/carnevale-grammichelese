@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Elimina account{% endblock %}
+{% block content %}
+<div class="wrap" style="max-width:480px; padding-top:60px; padding-bottom:80px;">
+  <div class="form-card">
+    <h3 style="color:var(--rosso);">Elimina definitivamente il tuo account</h3>
+    <p style="color:#7a6f58; font-size:0.9rem; margin-bottom:20px;">
+      Questa azione è <strong>irreversibile</strong>. Verranno cancellati per sempre: il tuo
+      account, tutti i gruppi che hai iscritto, e tutti i versamenti/partecipanti collegati —
+      anche quelli già segnati come pagati. Se hai bisogno solo di aggiungere o togliere un
+      partecipante, torna al tuo account invece di eliminarlo.
+    </p>
+    <form method="post">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+      <div class="form-row">
+        <label>La tua password, per confermare <span class="req">*</span></label>
+        <input type="password" name="password" required>
+      </div>
+      <div class="form-row">
+        <label>Scrivi ELIMINA per confermare <span class="req">*</span></label>
+        <input type="text" name="conferma_testo" placeholder="ELIMINA" required>
+      </div>
+      <button type="submit" class="btn-primary" style="width:100%; background:var(--rosso);">
+        Elimina definitivamente il mio account
+      </button>
+    </form>
+    <p style="text-align:center; margin-top:16px;">
+      <a href="{{ url_for('account') }}" style="color:#7a6f58;">Annulla, torna al mio account</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

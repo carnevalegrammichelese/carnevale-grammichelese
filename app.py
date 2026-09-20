@@ -626,6 +626,31 @@ def account_elimina_versamento(versamento_id):
     return redirect(url_for("account"))
 
 
+@app.route("/account/elimina", methods=["GET", "POST"])
+@utente_login_required
+def account_elimina():
+    db = get_db()
+    utente = db.execute("SELECT * FROM utenti WHERE id = ?", (session["utente_id"],)).fetchone()
+
+    if request.method == "POST":
+        password = request.form.get("password", "")
+        conferma_testo = request.form.get("conferma_testo", "").strip().upper()
+
+        if conferma_testo != "ELIMINA":
+            flash('Scrivi ELIMINA (tutto maiuscolo) per confermare.', "errore")
+            return render_template("account_elimina.html")
+        if not check_password_hash(utente["password_hash"], password):
+            flash("Password errata.", "errore")
+            return render_template("account_elimina.html")
+
+        elimina_utente_e_dati(db, session["utente_id"])
+        session.clear()
+        flash("Il tuo account e tutte le tue iscrizioni sono stati eliminati definitivamente.", "successo")
+        return redirect(url_for("home"))
+
+    return render_template("account_elimina.html")
+
+
 # ---------------------------------------------------------------------------
 # Admin — autenticazione
 # ---------------------------------------------------------------------------
@@ -1044,6 +1069,27 @@ def admin_utenti():
     return render_template("admin/utenti.html", utenti=utenti)
 
 
+def elimina_utente_e_dati(db, utente_id):
+    """Elimina un utente e a cascata tutte le sue iscrizioni, versamenti e partecipanti."""
+    iscrizioni_ids = [
+        r["id"] for r in db.execute(
+            "SELECT id FROM iscrizioni WHERE utente_id = ?", (utente_id,)
+        ).fetchall()
+    ]
+    for iscrizione_id in iscrizioni_ids:
+        versamenti_ids = [
+            r["id"] for r in db.execute(
+                "SELECT id FROM versamenti WHERE iscrizione_id = ?", (iscrizione_id,)
+            ).fetchall()
+        ]
+        for versamento_id in versamenti_ids:
+            db.execute("DELETE FROM partecipanti WHERE versamento_id = ?", (versamento_id,))
+        db.execute("DELETE FROM versamenti WHERE iscrizione_id = ?", (iscrizione_id,))
+    db.execute("DELETE FROM iscrizioni WHERE utente_id = ?", (utente_id,))
+    db.execute("DELETE FROM utenti WHERE id = ?", (utente_id,))
+    db.commit()
+
+
 @app.route("/admin/utenti/<int:utente_id>/reset-password", methods=["POST"])
 @admin_login_required
 def admin_reset_password_utente(utente_id):
@@ -1060,6 +1106,22 @@ def admin_reset_password_utente(utente_id):
     flash(
         f"Nuova password temporanea per {utente['nome']} ({utente['email']}): {nuova_password} "
         f"— comunicagliela tu (telefono/email), non è stata inviata automaticamente.",
+        "successo",
+    )
+    return redirect(url_for("admin_utenti"))
+
+
+@app.route("/admin/utenti/<int:utente_id>/elimina", methods=["POST"])
+@admin_login_required
+def admin_elimina_utente(utente_id):
+    db = get_db()
+    utente = db.execute("SELECT * FROM utenti WHERE id = ?", (utente_id,)).fetchone()
+    if utente is None:
+        abort(404)
+    elimina_utente_e_dati(db, utente_id)
+    flash(
+        f"Account di {utente['nome']} ({utente['email']}) eliminato, insieme a tutte le sue "
+        f"iscrizioni e versamenti.",
         "successo",
     )
     return redirect(url_for("admin_utenti"))
